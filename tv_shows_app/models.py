@@ -13,7 +13,7 @@ class ShowManager (models.Manager):
             except Show.DoesNotExist:
                 try_show = None
             if try_show != None:
-                errors["title"] = "The title " + postData['title_txt'] + " already exists."
+                errors["title"] = "The title '" + postData['title_txt'] + "' already exists."
         if len(postData['network_txt']) < 3:
             errors["network"] = "Network should be at least 3 characters long"
         if len(postData['desc_txt']) > 0 and len(postData['desc_txt']) < 10:
