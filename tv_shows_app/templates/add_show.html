@@ -10,6 +10,15 @@
 <body>
     <a href="/shows" id="go_back">Go Back</a>
     <div id="show_wrapper">
+        {% if messages %}
+        <ul class="error_messages">
+            {% for msg in messages %}
+                <li {% if msg.tags %} class="{{msg.tags}}"
+                    {% endif %}>{{ msg }}</li>
+                </li>
+            {% endfor%}
+        {% endif %}
+        </ul>
         <form action="/shows/create" method="post">
         {% csrf_token %}
         <h1>Add a New Show</h1>

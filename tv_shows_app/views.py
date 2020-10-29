@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from . models import Show
+from . models import Show, ShowManager
+from django.contrib import messages
 
 # Create your views here.
 def redirect_shows(request):
@@ -13,13 +14,22 @@ def displayAllShows(request):
 
 def addShow(request):
     if request.method == "POST":
-        new_show = Show.objects.create(
+        errors = Show.objects.validate_data(request.POST)
+        if len(errors) > 0:
+            for key, errormsg in errors.items():
+                messages.error(request, errormsg)
+            return redirect("/shows/new")
+
+        else:
+            new_show = Show.objects.create(
             title=request.POST['title_txt'],
             network=request.POST['network_txt'],
             release_date=request.POST['release_txt'],
             desc=request.POST['desc_txt']
         )
         return redirect("/shows/"+ str(new_show.id))
+    return redirect("/")
+
 
 def displayNewShow(request):
     return render (request, "add_show.html")
@@ -32,13 +42,20 @@ def displayShow(request, show_id):
 
 def editShow(request, show_id):
     if request.method == "POST":
-        sel_show=Show.objects.get(id=show_id)
-        sel_show.title=request.POST['title_txt']
-        sel_show.network=request.POST['network_txt']
-        sel_show.release_date=request.POST['release_txt']
-        sel_show.desc=request.POST['desc_txt']
-        sel_show.save()
-        return redirect("/shows/"+ str(sel_show.id))
+        errors = Show.objects.validate_data(request.POST)
+        if len(errors) > 0:
+            for key, errormsg in errors.items():
+                messages.error(request, errormsg)
+            return redirect("/shows/" + str(show_id)+"/edit")
+        else:
+            sel_show=Show.objects.get(id=show_id)
+            sel_show.title=request.POST['title_txt']
+            sel_show.network=request.POST['network_txt']
+            sel_show.release_date=request.POST['release_txt']
+            sel_show.desc=request.POST['desc_txt']
+            sel_show.save()
+            return redirect("/shows/"+ str(sel_show.id))
+    return redirect("/")
 
 
 def displayEditShow (request, show_id):
